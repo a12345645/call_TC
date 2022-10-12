@@ -1,0 +1,12 @@
+[Unit]
+Description=call tc
+
+[Service]
+Type=simple
+WorkingDirectory=/home/oslab/Desktop/call_TC
+ExecStart=/bin/bash start.sh
+Restart=always
+User=oslab
+
+[Install]
+WantedBy=multi-user.target
