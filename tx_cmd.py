@@ -19,17 +19,13 @@ class cmd_5F4C(tx_cmd):
     def info(self, data):
         return b'\x5f\x4C'
 
-class cmd_5F10(tx_cmd):
-    command = '5F10'
+class cmd_5F46(tx_cmd):
+    command = '5F46'
     def info(self, data):
-        if (len(data) < 1):
-            print('5f10 need ControlStrategy.')
+        if (len(data) != 2):
+            print('5F46 need SegmentType and WeekDay.')
             return b''
-        ret = b'\x5f\x10' + int(data[0]).to_bytes(1, 'big')
-        if len(data) == 2:
-            return ret + int(data[1]).to_bytes(1, 'big')
-        else:
-            return ret + b'\x78'
+        return b'\x5f\x46' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big')
 
 class cmd_5F10(tx_cmd):
     command = '5F10'
@@ -63,4 +59,4 @@ class cmd_5F1E(tx_cmd):
         return ret
     
 
-txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42()]
+txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46()]

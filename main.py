@@ -59,7 +59,7 @@ class RxCommand(object):
                         continue
                     if (self.check_CKS(self.command[0:len(self.command) - 1], self.command[len(self.command) - 1])):
                         info = self.get_info()
-                        print('%02x %02x' % (info[0], info[1]))
+                        print('%02x %02x' % (info[0], info[1]), int(self.command[2]))
                         for i in self.cmds:
                             if i.Iscmd(info):
                                 i.content(info)
@@ -71,17 +71,17 @@ class RxCommand(object):
                 elif data == b'\xdd':
                     if not self.recv_header():
                         continue
-                    # print('ack')
+                    print('ack, seq', int(self.command[2]))
                 elif data == b'\xee':
                     if not self.recv_header():
                         continue
                     print('nak')
 
-RxCommand()
+rx = RxCommand()
 
 class TxCommand(object):
     seq_num = 0
-    cmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42()]
+    cmds = txcmds
     
     def request(self, line):
         info, msg = self.generate_info(line)
@@ -92,7 +92,7 @@ class TxCommand(object):
         cmd = self.generate_cmd(info)
 
         com.write(cmd)
-        print(msg + ' complete.')
+        print(msg + ' complete, seq %d.' % self.seq_num)
         self.seq_num += 1
     
     def generate_info(self, line):
@@ -163,10 +163,6 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('5f4c')
-# tx.add_polling_request('0f42')
-
-# tx.request('5f10 1')
-time.sleep(15)
-# tx.request('5f 18 5')
+tx.add_polling_request('5f46 1 1')
+# tx.request('5f18 5')
 # tx.request('5f10 1')
