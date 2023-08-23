@@ -56,4 +56,11 @@ class cmd_0F80(rx_cmd):
             return
         print('0F80 CommandID: %02x %02x' % (info[2], info[3]))
 
-rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80()]
+class cmd_5FE3(rx_cmd):
+    command = b'\x5f\xe3'
+    def content(self, info):
+        if len(info) != 8:
+            return
+        print('5FE3 ChildNo: %d PlanID: %d StartOffset: %d EndOffset: %d' % (info[2], info[3], info[4] * 256 + info[5], info[6] * 2568 + info[7])) 
+
+rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3()]
