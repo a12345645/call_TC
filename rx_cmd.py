@@ -61,6 +61,6 @@ class cmd_5FE3(rx_cmd):
     def content(self, info):
         if len(info) != 8:
             return
-        print('5FE3 ChildNo: %d PlanID: %d StartOffset: %d EndOffset: %d' % (info[2], info[3], info[4] * 256 + info[5], info[6] * 2568 + info[7])) 
+        print('5FE3 ChildNo: %d PlanID: %d StartOffset: %d %d EndOffset: %d %d' % (info[2], info[3], info[4], info[5], info[6], info[7])) 
 
 rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3()]
