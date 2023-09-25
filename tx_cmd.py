@@ -57,6 +57,7 @@ class cmd_5F1E(tx_cmd):
         for i in range(6):
             ret += data[i].to_bytes(1, 'big')
         return ret
+
 class cmd_5F63(tx_cmd):
     command = '5F63'
     def info(self, data):
@@ -65,4 +66,9 @@ class cmd_5F63(tx_cmd):
             return b''
         return b'\x5f\x63' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big')
 
-txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63()]
+class cmd_0F43(tx_cmd):
+    command = '0F43'
+    def info(self, data):
+        return b'\x0f\x43'
+
+txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43()]

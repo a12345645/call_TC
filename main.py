@@ -59,7 +59,7 @@ class RxCommand(object):
                         continue
                     if (self.check_CKS(self.command[0:len(self.command) - 1], self.command[len(self.command) - 1])):
                         info = self.get_info()
-                        print('%02x %02x' % (info[0], info[1]), int(self.command[2]))
+                        print('recv %02x %02x' % (info[0], info[1]), int(self.command[2]))
                         for i in self.cmds:
                             if i.Iscmd(info):
                                 i.content(info)
@@ -163,6 +163,6 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('5f63 1 1')
+tx.add_polling_request('0F43')
 # tx.request('5f18 5')
 # tx.request('5f10 1')
