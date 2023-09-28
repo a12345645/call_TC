@@ -71,4 +71,12 @@ class cmd_0F43(tx_cmd):
     def info(self, data):
         return b'\x0f\x43'
 
-txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43()]
+class cmd_5F44(tx_cmd):
+    command = '5F44'
+    def info(self, data):
+        if (len(data) != 1):
+            print('5f44 need PlanId')
+            return b''
+        return b'\x5f\x44' + int(data[0]).to_bytes(1, 'big')
+
+txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(), cmd_5F44()]

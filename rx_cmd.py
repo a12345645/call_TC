@@ -70,4 +70,14 @@ class cmd_0FC3(rx_cmd):
             return
         print('0FC3 Year: %d Month: %d Day: %d CompanyID %d Version %d CommandSet %d' % (info[2], info[3], info[4], info[5], info[6], info[7]))
 
-rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3()]
+class cmd_5FC4(rx_cmd):
+    command = b'\x5f\xc4'
+    def content(self, info):
+        if len(info) < 4:
+            return
+        print('5FC4 PlanID: %d SubPhaseCount %d' % (info[2], info[3]))
+        for i in range(info[3]):
+            print('MinGreen: %d MaxGreen: %d Yellow: %d AllRed: %d PedGreenFlash: %d PedRed: %d' % 
+            (info[4 + i * 7], info[5 + i * 7] * 256 + info[6 + i * 7], info[7 + i * 7], info[8 + i * 7], info[9 + i * 7], info[10 + i * 7]))
+
+rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4()]

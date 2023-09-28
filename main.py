@@ -163,6 +163,6 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('0F43')
+tx.add_polling_request('5F44 1')
 # tx.request('5f18 5')
 # tx.request('5f10 1')
