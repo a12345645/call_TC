@@ -27,13 +27,13 @@ class cmd_5FC6(rx_cmd):
         for i in range(numWeekDay):
             weekDaylist.append(info[4 + segmentCount * 3 + i])
 
-        print('5FC6 SegmentType %d SegmentCount %d (' % (segmentType, segmentCount), end='')
+        print('5FC6 SegmentType %d SegmentCount %d' % (segmentType, segmentCount), end='')
         for segment in segmentList:
-            print('Hour %d Min %d PlanID %d, ' % (segment[0], segment[1], segment[2]), end='')
-        print(') NumWeekDay %d (' % (numWeekDay), end = '')
+            print('\nHour %d Min %d PlanID %d, ' % (segment[0], segment[1], segment[2]), end='')
+        print('\nNumWeekDay %d' % (numWeekDay), end = '')
         for weekDay in weekDaylist:
-            print('weekDay %d, ' % (weekDay), end='')
-        print(')')
+            print('\nweekDay %d, ' % (weekDay), end='')
+        print('')
 
 class cmd_5FCC(rx_cmd):
     command = b'\x5f\xcc'
