@@ -163,14 +163,5 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-# tx.add_polling_request('5F46 1 0')
-# tx.request('5f18 5')
-tx.request('5f10 1')
-tx.request('5f10 16')
-tx.request('5F44 22')
-time.sleep(0.5)
-tx.request('5f10 1')
-time.sleep(0.5)
-tx.request('5f10 1')
-time.sleep(0.5)
-tx.request('5f10 1')
+tx.add_polling_request('5F43 18')
+tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')

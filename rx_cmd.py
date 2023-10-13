@@ -80,4 +80,16 @@ class cmd_5FC4(rx_cmd):
             print('MinGreen: %d MaxGreen: %d Yellow: %d AllRed: %d PedGreenFlash: %d PedRed: %d' % 
             (info[4 + i * 7], info[5 + i * 7] * 256 + info[6 + i * 7], info[7 + i * 7], info[8 + i * 7], info[9 + i * 7], info[10 + i * 7]))
 
-rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4()]
+class cmd_5FC3(rx_cmd):
+    command = b'\x5f\xc3'
+    def content(self, info):
+        if len(info) < 4:
+            return
+        print('5FC3 PhaseOrder: %d SignalMap: %d SignalCount: %d SubPhaseCount: %d' % (info[2], info[3], info[4], info[5]))
+        for i in range(info[5]):
+            print('subphase %d ' % (i + 1), end='')
+            for j in range(info[4]):
+                print('%02x ' % (info[6 + i * info[4] + j]), end='')
+            print('')
+
+rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4(), cmd_5FC3()]

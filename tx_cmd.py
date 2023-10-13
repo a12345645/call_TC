@@ -86,7 +86,7 @@ class cmd_5F13(tx_cmd):
     command = '5F13'
     def info(self, data):
         if (len(data) <= 4):
-            print('5f13 need PhaseOrder SignalMap SignalCount SubPhaseCount ')
+            print('5f13 need PhaseOrder SignalMap SignalCount SubPhaseCount')
             return b''
         command = b'\x5f\x13' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big') + \
             int(data[2]).to_bytes(1, 'big') + int(data[3]).to_bytes(1, 'big')
@@ -94,8 +94,8 @@ class cmd_5F13(tx_cmd):
         SubPhaseCount = int(data[3])
         for i in range(SubPhaseCount):
             for j in range(SignalCount):
-                command += int(data[4 + i * SignalCount + j])
-        return b'\x5f\x13' + int(data[0]).to_bytes(1, 'big')
+                command += int(data[4 + i * SignalCount + j], 16).to_bytes(1, 'big')
+        return command
 
 # 時相或步階變換控制
 class cmd_5F1C(tx_cmd):
@@ -106,4 +106,57 @@ class cmd_5F1C(tx_cmd):
             return b''
         return b'\x5f\x1c' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big') + int(data[2]).to_bytes(1, 'big')
 
-txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(), cmd_5F44(), cmd_5F13(), cmd_5F1C()]
+
+# 一般日時段型態管理, 先用 5F46 查詢在使用
+class cmd_5F16(tx_cmd):
+    command = '5F16'
+    def info(self, data):
+        if (len(data) <= 2):
+            print('5F16 need SegmentType SegmentCount')
+            return b''
+        segmentType = int(data[0])
+        segmentCount = int(data[1])
+        command = b'\x5f\x16' + segmentType.to_bytes(1, 'big') + segmentCount.to_bytes(1, 'big')
+        index = 2
+        for i in range(segmentCount):
+            command += int(data[index]).to_bytes(1, 'big') # Hour
+            command += int(data[index + 1]).to_bytes(1, 'big') # Min
+            command += int(data[index + 2]).to_bytes(1, 'big') # PlanID
+            index += 3
+        numWeekDay = int(data[index])
+        command += int(data[index]).to_bytes(1, 'big')
+        for i in range(numWeekDay):
+            command += int(data[index + i + 1]).to_bytes(1, 'big')
+        return command
+
+class cmd_5F16(tx_cmd):
+    command = '5F16'
+    def info(self, data):
+        if (len(data) <= 2):
+            print('5F16 need SegmentType SegmentCount')
+            return b''
+        segmentType = int(data[0])
+        segmentCount = int(data[1])
+        command = b'\x5f\x16' + segmentType.to_bytes(1, 'big') + segmentCount.to_bytes(1, 'big')
+        index = 2
+        for i in range(segmentCount):
+            command += int(data[index]).to_bytes(1, 'big') # Hour
+            command += int(data[index + 1]).to_bytes(1, 'big') # Min
+            command += int(data[index + 2]).to_bytes(1, 'big') # PlanID
+            index += 3
+        numWeekDay = int(data[index])
+        command += int(data[index]).to_bytes(1, 'big')
+        for i in range(numWeekDay):
+            command += int(data[index + i + 1]).to_bytes(1, 'big')
+        return command
+
+# 時相或步階變換控制
+class cmd_5F43(tx_cmd):
+    command = '5F43'
+    def info(self, data):
+        if (len(data) != 1):
+            print('5F43 need PhaseOrder')
+            return b''
+        return b'\x5f\x43' + int(data[0]).to_bytes(1, 'big')
+
+txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(), cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43()]
