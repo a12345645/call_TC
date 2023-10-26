@@ -1,12 +1,14 @@
 import threading
 import time
 import serial
+import math
 
 from tx_cmd import *
 from rx_cmd import *
 
 com = serial.Serial('/dev/ttyS0',9600)
- 
+seq_num = 0
+
 class RxCommand(object):
     command = b''
     cmds = rxcmds
@@ -48,6 +50,7 @@ class RxCommand(object):
         return r + self.get_CKS(r)
     
     def recieve(self):
+        global seq_num
         while True:
             data = com.read(1)
             if data == b'\xaa':
@@ -63,27 +66,27 @@ class RxCommand(object):
                         for i in self.cmds:
                             if i.Iscmd(info):
                                 i.content(info)
-                                
+
                         com.write(self.response_ack())
-                        
                     else:
                         print('check_CKS wrong.')
+                        continue
                 elif data == b'\xdd':
                     if not self.recv_header():
                         continue
-                    print('ack, seq', int(self.command[2]))
+                    print('ack, seq', int(self.command[2]), '-', int(self.command[3]), int(self.command[4]))
                 elif data == b'\xee':
                     if not self.recv_header():
                         continue
-                    print('nak')
-
+                    print('nak', int(self.command[2]), '-', int(self.command[3]), int(self.command[4]))
+                if abs(int(self.command[2]) - seq_num) > 10:
+                    seq_num = int(self.command[2]) + 1
 rx = RxCommand()
 
 class TxCommand(object):
-    seq_num = 0
     cmds = txcmds
-    
     def request(self, line):
+        global seq_num
         info, msg = self.generate_info(line)
         if info == b'':
             print('Command nofind.')
@@ -92,8 +95,8 @@ class TxCommand(object):
         cmd = self.generate_cmd(info)
 
         com.write(cmd)
-        print(msg + ' complete, seq %d.' % self.seq_num)
-        self.seq_num += 1
+        print(msg + ' complete, seq %d.' % seq_num)
+        seq_num += 1
     
     def generate_info(self, line):
         l = line.split(' ')
@@ -109,9 +112,10 @@ class TxCommand(object):
         return info, msg
         
     def generate_cmd(self, info):
-        if self.seq_num > 0xFF:
-            self.seq_num = 0
-        command = b'\xaa\xbb' + self.seq_num.to_bytes(1, 'big') + b'\xff\xff'
+        global seq_num
+        if seq_num > 0xFF:
+            seq_num = 0
+        command = b'\xaa\xbb' + seq_num.to_bytes(1, 'big') + b'\xff\xff'
 
         cmd_len = 10 + len(info)
         
@@ -147,11 +151,12 @@ class TxCommand(object):
             self.polling_thread.start()
     
     def polling_request(self):
+        global seq_num
         while True:
             for i in self.request_cmds:
                 if i.enable:
                     com.write(i.cmd())
-                    self.seq_num += 1
+                    seq_num += 1
             time.sleep(0.5)
         
     
@@ -163,5 +168,7 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('5F43 18')
-tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
+tx.add_polling_request('5F4C')
+# tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
+time.sleep(5)
+# tx.request('5F3F 2 255')

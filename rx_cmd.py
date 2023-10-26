@@ -92,4 +92,20 @@ class cmd_5FC3(rx_cmd):
                 print('%02x ' % (info[6 + i * info[4] + j]), end='')
             print('')
 
-rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4(), cmd_5FC3()]
+class cmd_0F91(rx_cmd):
+    command = b'\x0f\x91'
+    def content(self, info):
+        print('0F91 Reboot Communication.')
+
+class cmd_0F04(rx_cmd):
+    command = b'\x0f\x04'
+    def content(self, info):
+        print('0F04 %02x %02x' % (info[2], info[3]))
+
+class cmd_0FC1(rx_cmd):
+    command = b'\x0f\xC1'
+    def content(self, info):
+        print('0FC1 %02x %02x' % (info[2], info[3]))
+
+rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4(),
+    cmd_5FC3(), cmd_0F04(), cmd_0FC1()]

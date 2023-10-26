@@ -159,4 +159,32 @@ class cmd_5F43(tx_cmd):
             return b''
         return b'\x5f\x43' + int(data[0]).to_bytes(1, 'big')
 
-txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(), cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43()]
+class cmd_0F11(tx_cmd):
+    command = '0F11'
+    def info(self, data):
+        return b'\x0f\x11'
+
+class cmd_5F3F(tx_cmd):
+    command = '5F3F'
+    def info(self, data):
+        if (len(data) != 2):
+            print('5F3F need TransmitType TransmitCylce')
+            return b''
+        return b'\x5f\x3f' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big')
+
+class cmd_0F14(tx_cmd):
+    command = '0F14'
+    def info(self, data):
+        if (len(data) != 1):
+            print('0F14 need HardwareCylce')
+            return b''
+        return b'\x0f\x14' + int(data[0]).to_bytes(1, 'big')
+
+class cmd_0F41(tx_cmd):
+    command = '0F41'
+    def info(self, data):
+        return b'\x0f\x41'
+
+txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(),
+    cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43(), cmd_0F11(), cmd_5F3F(), cmd_0F14(),
+    cmd_0F41()]
