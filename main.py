@@ -6,8 +6,7 @@ import math
 from tx_cmd import *
 from rx_cmd import *
 
-com = serial.Serial('/dev/ttyS0',9600)
-seq_num = 0
+com = serial.Serial('/dev/ttyS1',9600)
 
 class RxCommand(object):
     command = b''
@@ -50,7 +49,6 @@ class RxCommand(object):
         return r + self.get_CKS(r)
     
     def recieve(self):
-        global seq_num
         while True:
             data = com.read(1)
             if data == b'\xaa':
@@ -79,14 +77,12 @@ class RxCommand(object):
                     if not self.recv_header():
                         continue
                     print('nak', int(self.command[2]), '-', int(self.command[3]), int(self.command[4]))
-                if abs(int(self.command[2]) - seq_num) > 10:
-                    seq_num = int(self.command[2]) + 1
 rx = RxCommand()
 
 class TxCommand(object):
     cmds = txcmds
+    seq_num = 0
     def request(self, line):
-        global seq_num
         info, msg = self.generate_info(line)
         if info == b'':
             print('Command nofind.')
@@ -96,7 +92,7 @@ class TxCommand(object):
 
         com.write(cmd)
         print(msg + ' complete, seq %d.' % seq_num)
-        seq_num += 1
+        self.seq_num += 1
     
     def generate_info(self, line):
         l = line.split(' ')
@@ -112,10 +108,9 @@ class TxCommand(object):
         return info, msg
         
     def generate_cmd(self, info):
-        global seq_num
-        if seq_num > 0xFF:
-            seq_num = 0
-        command = b'\xaa\xbb' + seq_num.to_bytes(1, 'big') + b'\xff\xff'
+        if self.seq_num > 0xFF:
+            self.seq_num = 0
+        command = b'\xaa\xbb' + self.seq_num.to_bytes(1, 'big') + b'\xff\xff'
 
         cmd_len = 10 + len(info)
         
@@ -151,13 +146,12 @@ class TxCommand(object):
             self.polling_thread.start()
     
     def polling_request(self):
-        global seq_num
         while True:
             for i in self.request_cmds:
                 if i.enable:
                     com.write(i.cmd())
-                    seq_num += 1
-            time.sleep(0.5)
+                    self.seq_num += 1
+            time.sleep(1)
         
     
     def check_CKS(self, data):
@@ -170,5 +164,10 @@ tx = TxCommand()
 
 tx.add_polling_request('5F4C')
 # tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
-time.sleep(5)
-# tx.request('5F3F 2 255')
+# time.sleep(5)
+# tx.request('5F4C')
+# time.sleep(5)
+# tx.request('5F4C')
+# time.sleep(5)
+# tx.request('5F4C')
+
