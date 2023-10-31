@@ -45,7 +45,7 @@ class RxCommand(object):
         return self.command[7:l - 3]
     
     def response_ack(self):
-        r = b'\xaa\xdd' + self.command[2].to_bytes(1, 'big') + b'\xff\xff\x08'
+        r = b'\xaa\xdd' + self.command[2].to_bytes(1, 'big') + b'\xff\xff\x00\x08'
         return r + self.get_CKS(r)
     
     def recieve(self):
@@ -92,7 +92,6 @@ class TxCommand(object):
 
         com.write(cmd)
         print(msg + ' complete, seq %d.' % seq_num)
-        self.seq_num += 1
     
     def generate_info(self, line):
         l = line.split(' ')
@@ -111,6 +110,7 @@ class TxCommand(object):
         if self.seq_num > 0xFF:
             self.seq_num = 0
         command = b'\xaa\xbb' + self.seq_num.to_bytes(1, 'big') + b'\xff\xff'
+        self.seq_num += 1
 
         cmd_len = 10 + len(info)
         
@@ -150,7 +150,7 @@ class TxCommand(object):
             for i in self.request_cmds:
                 if i.enable:
                     com.write(i.cmd())
-                    self.seq_num += 1
+                    print('asdsad', self.seq_num)
             time.sleep(1)
         
     
