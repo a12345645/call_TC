@@ -6,7 +6,7 @@ import math
 from tx_cmd import *
 from rx_cmd import *
 
-com = serial.Serial('/dev/ttyS1',9600)
+com = serial.Serial('/dev/ttyS0',9600)
 
 class RxCommand(object):
     command = b''
@@ -91,7 +91,7 @@ class TxCommand(object):
         cmd = self.generate_cmd(info)
 
         com.write(cmd)
-        print(msg + ' complete, seq %d.' % seq_num)
+        print(msg + ' complete, seq %d.' % self.seq_num)
     
     def generate_info(self, line):
         l = line.split(' ')
@@ -150,7 +150,6 @@ class TxCommand(object):
             for i in self.request_cmds:
                 if i.enable:
                     com.write(i.cmd())
-                    print('asdsad', self.seq_num)
             time.sleep(1)
         
     
@@ -162,11 +161,15 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('5F4C')
+# tx.add_polling_request('5F4C')
 # tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
 # time.sleep(5)
-# tx.request('5F4C')
-# time.sleep(5)
+tx.request('5F10 16')
+time.sleep(1)
+tx.request('5F10 16')
+time.sleep(1)
+tx.request('5F1C 4 5 5')
+time.sleep(1)
 # tx.request('5F4C')
 # time.sleep(5)
 # tx.request('5F4C')
