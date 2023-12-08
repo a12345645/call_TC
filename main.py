@@ -6,7 +6,7 @@ import math
 from tx_cmd import *
 from rx_cmd import *
 
-com = serial.Serial('/dev/ttyS0',9600)
+com = serial.Serial('/dev/ttyS1',9600)
 
 class RxCommand(object):
     command = b''
@@ -105,14 +105,24 @@ class TxCommand(object):
                 msg = i.command
                 break  
         return info, msg
-        
+    
+    def repeat_aa(self, arr):
+        result = b''
+        for num in arr:
+            result += num.to_bytes(1, 'big')
+            if num == 0xAA:
+                 result += num.to_bytes(1, 'big')
+        return result
+
     def generate_cmd(self, info):
         if self.seq_num > 0xFF:
             self.seq_num = 0
         command = b'\xaa\xbb' + self.seq_num.to_bytes(1, 'big') + b'\xff\xff'
         self.seq_num += 1
 
+        info = self.repeat_aa(info)
         cmd_len = 10 + len(info)
+
         
         command += cmd_len.to_bytes(2, 'big') + info + b'\xaa\xcc'
         command += self.check_CKS(command)
@@ -166,11 +176,14 @@ tx = TxCommand()
 # time.sleep(5)
 tx.request('5F10 16')
 time.sleep(1)
-tx.request('5F10 16')
+tx.request('5F1C 2 1 170')
 time.sleep(1)
-tx.request('5F1C 4 5 5')
-time.sleep(1)
+# tx.request('5F1C 2 5 5')
+# time.sleep(1)
+# tx.request('5F10 1')
+# time.sleep(1)
 # tx.request('5F4C')
 # time.sleep(5)
 # tx.request('5F4C')
+
 

@@ -185,6 +185,27 @@ class cmd_0F41(tx_cmd):
     def info(self, data):
         return b'\x0f\x41'
 
+class cmd_5F14(tx_cmd):
+    command = '5F14'
+    def info(self, data):
+        if (len(data) <= 2):
+            print('5F14 need SegmentType SegmentCount')
+            return b''
+        segmentType = int(data[0])
+        segmentCount = int(data[1])
+        command = b'\x5f\x16' + segmentType.to_bytes(1, 'big') + segmentCount.to_bytes(1, 'big')
+        index = 2
+        for i in range(segmentCount):
+            command += int(data[index]).to_bytes(1, 'big') # Hour
+            command += int(data[index + 1]).to_bytes(1, 'big') # Min
+            command += int(data[index + 2]).to_bytes(1, 'big') # PlanID
+            index += 3
+        numWeekDay = int(data[index])
+        command += int(data[index]).to_bytes(1, 'big')
+        for i in range(numWeekDay):
+            command += int(data[index + i + 1]).to_bytes(1, 'big')
+        return command
+
 txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(),
     cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43(), cmd_0F11(), cmd_5F3F(), cmd_0F14(),
     cmd_0F41()]
