@@ -161,7 +161,13 @@ class TxCommand(object):
                 if i.enable:
                     com.write(i.cmd())
             time.sleep(1)
-        
+
+    def send_row_data(self, data):
+        l = data.split(' ')
+        packet = b''
+        for i in l:
+            packet += int(i, 16).to_bytes(1, 'big')
+        com.write(packet)
     
     def check_CKS(self, data):
         cks = 0
@@ -174,10 +180,11 @@ tx = TxCommand()
 # tx.add_polling_request('5F4C')
 # tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
 # time.sleep(5)
-tx.request('5F10 16')
-time.sleep(1)
-tx.request('5F1C 2 1 170')
-time.sleep(1)
+# tx.request('5F10 16')
+# time.sleep(1)
+# tx.request('5F1C 2 1 170')
+# time.sleep(1)
+tx.send_row_data('5F 10 10 10')
 # tx.request('5F1C 2 5 5')
 # time.sleep(1)
 # tx.request('5F10 1')
