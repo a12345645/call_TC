@@ -88,13 +88,33 @@ class cmd_5F13(tx_cmd):
         if (len(data) <= 4):
             print('5f13 need PhaseOrder SignalMap SignalCount SubPhaseCount')
             return b''
-        command = b'\x5f\x13' + int(data[0]).to_bytes(1, 'big') + int(data[1]).to_bytes(1, 'big') + \
+        command = b'\x5f\x13' + int(data[0], 16).to_bytes(1, 'big') + int(data[1], 16).to_bytes(1, 'big') + \
             int(data[2]).to_bytes(1, 'big') + int(data[3]).to_bytes(1, 'big')
         SignalCount = int(data[2])
         SubPhaseCount = int(data[3])
         for i in range(SubPhaseCount):
             for j in range(SignalCount):
                 command += int(data[4 + i * SignalCount + j], 16).to_bytes(1, 'big')
+        return command
+
+class cmd_5F2F(tx_cmd):
+    command = '5F2F'
+    def info(self, data):
+        if (len(data) <= 4):
+            print('5F2F need PhaseOrder SignalMap SignalCount SubPhaseCount')
+            return b''
+        command = b'\x5f\x2F' + int(data[0]).to_bytes(1, 'big') + int(data[1], 16).to_bytes(1, 'big') + \
+            int(data[2]).to_bytes(1, 'big') + int(data[3]).to_bytes(1, 'big')
+        SignalCount = int(data[2])
+        SubPhaseCount = int(data[3])
+        idx = 4
+        for i in range(SubPhaseCount):
+            StepCount = int(data[idx])
+            idx += 1
+            for k in range(StepCount):
+                for j in range(SignalCount):
+                    command += int(data[idx], 16).to_bytes(1, 'big')
+                    idx += 1
         return command
 
 # 時相或步階變換控制
@@ -208,4 +228,4 @@ class cmd_5F14(tx_cmd):
 
 txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(),
     cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43(), cmd_0F11(), cmd_5F3F(), cmd_0F14(),
-    cmd_0F41()]
+    cmd_0F41(), cmd_5F2F()]

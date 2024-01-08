@@ -6,7 +6,7 @@ import math
 from tx_cmd import *
 from rx_cmd import *
 
-com = serial.Serial('/dev/ttyS1',9600)
+com = serial.Serial('/dev/ttyS0',9600)
 
 class RxCommand(object):
     command = b''
@@ -59,7 +59,7 @@ class RxCommand(object):
                     if not self.recv_header():
                         continue
                     if (self.check_CKS(self.command[0:len(self.command) - 1], self.command[len(self.command) - 1])):
-                        info = self.get_info()
+                        info = self.get_info().replace(b'\xaa\xaa', b'\xaa')
                         print('recv %02x %02x' % (info[0], info[1]), int(self.command[2]))
                         for i in self.cmds:
                             if i.Iscmd(info):
@@ -92,7 +92,7 @@ class TxCommand(object):
 
         com.write(cmd)
         print(msg + ' complete, seq %d.' % self.seq_num)
-    
+
     def generate_info(self, line):
         l = line.split(' ')
         info = b''
@@ -105,7 +105,7 @@ class TxCommand(object):
                 msg = i.command
                 break  
         return info, msg
-    
+
     def repeat_aa(self, arr):
         result = b''
         for num in arr:
@@ -128,7 +128,6 @@ class TxCommand(object):
         command += self.check_CKS(command)
         return command
 
-
     class loop_cmd():
         enable = False
         cmd = b''
@@ -145,7 +144,7 @@ class TxCommand(object):
                 self.enable = False
                 return info
             return self.parent.generate_cmd(info)
-    
+
     request_cmds = []
     polling_thread = ''
     def add_polling_request(self, line):
@@ -154,7 +153,7 @@ class TxCommand(object):
         if self.polling_thread == '':
             self.polling_thread = threading.Thread(target = self.polling_request)
             self.polling_thread.start()
-    
+
     def polling_request(self):
         while True:
             for i in self.request_cmds:
@@ -168,7 +167,7 @@ class TxCommand(object):
         for i in l:
             packet += int(i, 16).to_bytes(1, 'big')
         com.write(packet)
-    
+
     def check_CKS(self, data):
         cks = 0
         for d in data:
@@ -177,20 +176,45 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-# tx.add_polling_request('5F4C')
-# tx.request('5F13 18 55 4 4 4c 81 41 81 44 81 44 81 81 81 81 44 81 44 81 44')
-# time.sleep(5)
-# tx.request('5F10 16')
-# time.sleep(1)
-# tx.request('5F1C 2 1 170')
-# time.sleep(1)
-tx.send_row_data('5F 10 10 10')
-# tx.request('5F1C 2 5 5')
-# time.sleep(1)
-# tx.request('5F10 1')
-# time.sleep(1)
-# tx.request('5F4C')
-# time.sleep(5)
-# tx.request('5F4C')
+tx.add_polling_request('5F16 1 1 0 0 40 7 7 1 2 3 4 5 6')
 
+# tx.request('5F13 40 D5 5 5 ' +
+#             '81 44 81 41 81 ' +
+#             '81 44 81 44 81 ' +
+#             '41 81 44 81 81 ' +
+#             '44 81 44 81 81 ' +
+#             '81 81 81 81 44')
 
+# tx.add_polling_request('5F2F 40 D5 5 5 ' +
+#           '1 81 44 81 41 81 ' +
+#           '5 81 44 81 44 81 ' +
+#             '81 C4 81 C4 81 ' +
+#             '81 84 81 84 81 ' +
+#             '81 82 81 82 81 ' +
+#             '81 81 81 81 81 ' +
+#           '1 41 81 44 81 81 ' +
+#           '5 44 81 44 81 81 ' +
+#             'C4 81 C4 81 81 ' +
+#             '84 81 84 81 81 ' +
+#             '82 81 82 81 81 ' +
+#             '81 81 81 81 81 ' +
+#           '5 81 81 81 81 44 ' +
+#             '81 81 81 81 C4 ' +
+#             '81 81 81 81 84 ' +
+#             '81 81 81 81 82 ' +
+#             '81 81 81 81 81 ')
+
+# tx.request('5F13 40 D5 5 5 ' +
+#             '81 44 81 41 81 ' +
+#             '81 44 81 44 81 ' +
+#             '41 81 44 81 81 ' +
+#             '44 81 44 81 81 ' +
+#             '81 81 81 81 44')
+
+# 5F16 example
+
+# tx.request('5F16 1 1 0 0 40 7 7 1 2 3 4 5 6')
+
+# tx.request('5F46 1 5')
+
+# tx.request('5F4C')
