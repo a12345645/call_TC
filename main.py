@@ -176,7 +176,37 @@ class TxCommand(object):
 
 tx = TxCommand()
 
-tx.add_polling_request('5F16 1 1 0 0 40 7 7 1 2 3 4 5 6')
+
+# tx.add_polling_request('5F4C')
+
+
+# tx.request('5F48')
+# tx.request('5F15 40 0 40 4 ' +
+#             '55 10 39 11 ' + 
+#             '140 70')
+# tx.request('5F13 40 55 4 4 ' +
+#             '74 81 74 81 ' +
+#             '89 a1 89 a1 ' +
+#             '81 74 81 74 ' +
+#             'a1 89 a1 89')
+# tx.request('5F43 40')
+# tx.request('5F48')
+
+
+# tx.request('5F13 40 D5 4 2 ' +
+#             '44 81 44 81 ' +
+#             '81 44 81 44')
+
+# tx.request('5F13 40 D5 4 4 ' +
+#             '74 81 74 81 ' +
+#             '89 a1 89 a1 ' +
+#             '81 74 81 74 ' +
+#             'a1 89 a1 89')
+
+# tx.request('5F13 40 D5 4 3 ' +
+#             '44 a1 44 81 ' +
+#             '81 44 81 61 ' +
+#             'a1 41 a1 44')
 
 # tx.request('5F13 40 D5 5 5 ' +
 #             '81 44 81 41 81 ' +

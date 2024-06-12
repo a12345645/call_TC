@@ -85,7 +85,7 @@ class cmd_5FC3(rx_cmd):
     def content(self, info):
         if len(info) < 4:
             return
-        print('5FC3 PhaseOrder: %d SignalMap: %d SignalCount: %d SubPhaseCount: %d' % (info[2], info[3], info[4], info[5]))
+        print('5FC3 PhaseOrder: %02x SignalMap: %d SignalCount: %d SubPhaseCount: %d' % (info[2], info[3], info[4], info[5]))
         for i in range(info[5]):
             print('subphase %d ' % (i + 1), end='')
             for j in range(info[4]):
@@ -107,5 +107,29 @@ class cmd_0FC1(rx_cmd):
     def content(self, info):
         print('0FC1 %02x %02x' % (info[2], info[3]))
 
+class cmd_5FC5(rx_cmd):
+    command = b'\x5f\xc5'
+    def content(self, info):
+        if len(info) < 4:
+            return
+        print('5FC5 PlanID %d Direct %d PhaseOrder: %02x SubPhaseCount: %d ' % (info[2], info[3], info[4], info[5]))
+        index = 6
+        for i in range(info[5]):
+            print('subphase %d green %d' % (i + 1, info[index] * 256 + info[index + 1]))
+            index += 2
+        print('CycleTime %d Offset %d' % (info[index] * 256 + info[index + 1], info[index + 2] * 256 + info[index + 3]))  
+
+class cmd_5FC8(rx_cmd):
+    command = b'\x5f\xc8'
+    def content(self, info):
+        if len(info) < 4:
+            return
+        print('5FC8 PlanID %d Direct %d PhaseOrder: %02x SubPhaseCount: %d ' % (info[2], info[3], info[4], info[5]))
+        index = 6
+        for i in range(info[5]):
+            print('subphase %d green %d' % (i + 1, info[index] * 256 + info[index + 1]))
+            index += 2
+        print('CycleTime %d Offset %d' % (info[index] * 256 + info[index + 1], info[index + 2] * 256 + info[index + 3]))  
+
 rxcmds = [cmd_5FCC(), cmd_0FC2(), cmd_5FC6(), cmd_0F80(), cmd_5FE3(), cmd_0FC3(), cmd_5FC4(),
-    cmd_5FC3(), cmd_0F04(), cmd_0FC1()]
+    cmd_5FC3(), cmd_0F04(), cmd_0FC1(), cmd_5FC5(), cmd_5FC8()]

@@ -177,7 +177,7 @@ class cmd_5F43(tx_cmd):
         if (len(data) != 1):
             print('5F43 need PhaseOrder')
             return b''
-        return b'\x5f\x43' + int(data[0]).to_bytes(1, 'big')
+        return b'\x5f\x43' + int(data[0], 16).to_bytes(1, 'big')
 
 class cmd_0F11(tx_cmd):
     command = '0F11'
@@ -226,6 +226,42 @@ class cmd_5F14(tx_cmd):
             command += int(data[index + i + 1]).to_bytes(1, 'big')
         return command
 
+class cmd_5F15(tx_cmd):
+    command = '5F15'
+    def info(self, data):
+        if (len(data) <= 4):
+            print('5F15 need PlanID Direct PhaseOrder SubPhaseCount')
+            return b''
+        planID = int(data[0])
+        direct = int(data[1])
+        phaseOrder = int(data[2], 16)
+        subPhaseCount = int(data[3])
+        command = b'\x5f\x15' + planID.to_bytes(1, 'big') + direct.to_bytes(1, 'big') + phaseOrder.to_bytes(1, 'big') + subPhaseCount.to_bytes(1, 'big')
+        index = 4
+        for i in range(subPhaseCount):
+            command += int(int(data[index]) / 256).to_bytes(1, 'big') # Green
+            command += int(int(data[index]) % 256).to_bytes(1, 'big')
+            index += 1
+        
+
+        command +=  int(int(data[index]) / 256).to_bytes(1, 'big') + int(int(data[index]) % 256).to_bytes(1, 'big')
+        command +=  int(int(data[index + 1]) / 256).to_bytes(1, 'big') + int(int(data[index + 1]) % 256).to_bytes(1, 'big')
+        return command
+
+class cmd_5F45(tx_cmd):
+    command = '5F45'
+    def info(self, data):
+        if (len(data) < 1):
+            print('5F45 need PlanID')
+            return b''
+        command = b'\x5f\x45' + int(data[0]).to_bytes(1, 'big')
+        return command
+
+class cmd_5F48(tx_cmd):
+    command = '5F48'
+    def info(self, data):
+        return b'\x5f\x48'
+
 txcmds = [cmd_5F4C(), cmd_5F10(), cmd_5F18(), cmd_0F42(), cmd_5F46(), cmd_5F63(), cmd_0F43(),
     cmd_5F44(), cmd_5F13(), cmd_5F1C(), cmd_5F16(), cmd_5F43(), cmd_0F11(), cmd_5F3F(), cmd_0F14(),
-    cmd_0F41(), cmd_5F2F()]
+    cmd_0F41(), cmd_5F2F(), cmd_5F15(), cmd_5F45(), cmd_5F48()]
